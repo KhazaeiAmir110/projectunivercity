@@ -1,5 +1,5 @@
-from apps.company.models import company
+from apps.company.models import Company
 
 
 def create_company():
-    company.get()
+    Company.get()
