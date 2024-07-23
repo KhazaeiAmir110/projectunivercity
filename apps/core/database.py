@@ -40,7 +40,8 @@ class Database:
     def execute_raw(self, query):
         cursor = self.conn.cursor()
         cursor.execute(query)
-        return cursor.fetchall()
+        res = cursor.fetchall()
+        return res
 
     def __enter__(self):
         self.conn = self.connect()
