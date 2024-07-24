@@ -22,9 +22,9 @@ class ORMMixin:
 
     def delete(self, *args, **kwargs):
         global key_, value_
-        geting = self.get(*args, **kwargs)
+        getting = self.get(*args, **kwargs)
 
-        if type(geting) is tuple:
+        if type(getting) is tuple:
             for key, value in kwargs.items():
                 key_ = key
                 value_ = value
