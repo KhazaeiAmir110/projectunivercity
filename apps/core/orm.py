@@ -39,5 +39,20 @@ class ORMMixin:
         else:
             raise ValueError("ERROR :Not delete")
 
-    def create(self):
-        pass
+    def create(self, *args, **kwargs):
+        keys = []
+        values = []
+        for key, value in kwargs.items():
+            keys.append(key)
+            values.append(value)
+
+        with self:
+            self.execute_raw(
+                f"""
+                    INSERT INTO {self.__class__.__name__.split('Manager')[0].lower()}
+                     ({', '.join(keys)})
+                     VALUES ({str(', '.join(list(map(str, values))))})
+                     
+                """
+            )
+            return True

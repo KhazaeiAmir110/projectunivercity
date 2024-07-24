@@ -5,12 +5,13 @@ from apps.core.orm import ORMMixin
 class CompanyManager(ORMMixin, Database):
     _create_table_query = """
         CREATE TABLE IF NOT EXISTS company (
-            id SERIAL PRIMARY KEY,
-            name VARCHAR(100) NOT NULL,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
             description TEXT NOT NULL,
-            address VARCHAR(200) NOT NULL,
-            slug VARCHAR(100) NOT NULL UNIQUE,
-            user_id BIGINT NOT NULL REFERENCES user(id) DEFERRABLE INITIALLY DEFERRED
+            address TEXT NOT NULL,
+            slug TEXT NOT NULL UNIQUE,
+            user_id INTEGER NOT NULL,
+            FOREIGN KEY(user_id) REFERENCES user(id)
         );
     """
 
