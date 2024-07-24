@@ -1,0 +1,44 @@
+{% extends "company/base.html" %}
+
+{% block main %}
+	<div class="part-2-main">
+<!--            {# title #}-->
+            <div class="title-part-2-main font-bold">لطفاً آرایشگاه موردنظر را از لیست زیر انتخاب کنید</div>
+
+<!--            {# form #}-->
+            <form method="POST">
+
+                <div class="list-part-2-main">
+                    <label class="font-bold">لیست آرایشگاه ها</label>
+                    <label class="lable-list-part-2">
+                         <select name="company_slug" id="mySelect" onchange="displayText()">
+                          <option value="0">همه</option>
+                            {% for company in companies %}
+                                    <option value={{ company.slug }}>{{ company.name }}</option>
+                            {% endfor %}
+                        </select>
+                        {% for company in companies %}
+                        	<div id="{{ company.slug }}" style="display: none; margin-top: 2%">
+                                <p>{{ company.name}}</p>
+                                <p> شماره‌تلفن: {{ company.user.phone }}</p>
+                                <p> آدرس: {{ company.address}}</p>
+                                <p><a href="#">link</a></p>
+                            </div>
+
+                        {% endfor %}
+
+                    </label>
+                </div>
+                <div class="div">
+                    <div class="divar"></div>
+                    <div class="parent-btn">
+                        {#TODO: Add mouse pointer#}
+                        <button id="btn" type="submit" class="button-green"><a>بعدی</a></button>
+                    </div>
+                </div>
+            </form>
+    </div>
+{% endblock %}
+
+{% block script %}
+{% endblock %}
