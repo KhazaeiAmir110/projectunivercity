@@ -56,3 +56,19 @@ class ORMMixin:
                 """
             )
             return True
+
+    def filter(self, *args, **kwargs):
+        keys = [key for key in kwargs]
+        if len(keys) == 0:
+            return None
+        else:
+            with self:
+                results = self.execute_raw(
+                    f"""
+                        SELECT * FROM {self.__class__.__name__.split('Manager')[0].lower()} where
+                         {keys[0]} = '{kwargs[keys[0]]}';
+                    """
+                )
+                if len(results) == 0:
+                    return None
+                return results
