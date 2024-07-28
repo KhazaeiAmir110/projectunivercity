@@ -7,7 +7,7 @@ class UserManager(ORMMixin, Database):
         CREATE TABLE IF NOT EXISTS user (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             password TEXT NOT NULL,
-            is_superuser BOOLEAN NOT NULL,
+            is_superuser BOOLEAN NOT NULL default 0,
             first_name TEXT NOT NULL,
             last_name TEXT NOT NULL,
             is_active BOOLEAN NOT NULL,
@@ -17,6 +17,7 @@ class UserManager(ORMMixin, Database):
             otp TEXT
         );
     """
+
 
 class User:
     objects = UserManager()
