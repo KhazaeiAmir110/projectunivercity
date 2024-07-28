@@ -14,14 +14,14 @@
                          <select name="company_slug" id="mySelect" onchange="displayText()">
                           <option value="0">همه</option>
                             {% for company in companies %}
-                                    <option value={{ company.slug }}>{{ company.name }}</option>
+                                    <option value={{ company[4] }}>{{ company[1] }}</option>
                             {% endfor %}
                         </select>
                         {% for company in companies %}
                         	<div id="{{ company.slug }}" style="display: none; margin-top: 2%">
                                 <p>{{ company.name}}</p>
-                                <p> شماره‌تلفن: {{ company.user.phone }}</p>
-                                <p> آدرس: {{ company.address}}</p>
+                                <p> شماره‌تلفن: {{ company }}</p>
+                                <p> آدرس: {{ company[2]}}</p>
                                 <p><a href="#">link</a></p>
                             </div>
 
