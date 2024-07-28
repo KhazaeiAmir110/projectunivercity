@@ -11,6 +11,7 @@ class CompanyManager(ORMMixin, Database):
             address TEXT NOT NULL,
             slug TEXT NOT NULL UNIQUE,
             user_id INTEGER NOT NULL,
+            is_active BOOLEAN NOT NULL DEFAULT 0,
             FOREIGN KEY(user_id) REFERENCES user(id)
         );
     """
