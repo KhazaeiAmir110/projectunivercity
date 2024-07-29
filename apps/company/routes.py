@@ -18,3 +18,8 @@ def home():
                            join_table=Company.objects.left_join(join_table=User,
                                                                 join_condition='company.user_id=user.id')
                            )
+
+
+@blueprint.route('/<company_slug>')
+def company_detail(company_slug):
+    return render_template('company/page2.html', company=Company.objects.get(slug=company_slug))
