@@ -58,6 +58,18 @@ class ReservationManager(ORMMixin, Database):
     """
 
 
+class SansHistoryDateManager(ORMMixin, Database):
+    _create_table_query = """
+        CREATE TABLE IF NOT EXISTS sansholidaydatetime (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        start_time TIME NOT NULL,
+        end_time TIME NOT NULL,
+        company_id INTEGER NOT NULL UNIQUE,
+        FOREIGN KEY (company_id) REFERENCES company(id) ON DELETE CASCADE
+    );
+    """
+
+
 class Company:
     objects = CompanyManager()
 
@@ -68,6 +80,10 @@ class HolidaysDate:
 
 class SansConfig:
     objects = SansConfigManager()
+
+
+class SansHistoryDate:
+    objects = SansHistoryDateManager()
 
 
 class Reservation:
