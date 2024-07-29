@@ -79,3 +79,15 @@ class ORMMixin:
                 if len(results) == 0:
                     return None
                 return results
+
+    def left_join(self, join_table, join_condition, *args, **kwargs):
+        keys = kwargs.keys()
+
+        with self:
+            result = self.execute_raw(
+                f"""
+                    SELECT * FROM {self.__class__.__name__.split('Manager')[0].lower()}
+                     LEFT OUTER JOIN {join_table.__name__.lower()} ON {join_condition};
+                """
+            )
+            return result
