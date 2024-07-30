@@ -17,7 +17,7 @@ class CompanyManager(ORMMixin, Database):
     """
 
 
-class HolidayDateManager(ORMMixin, Database):
+class HolidaysDateManager(ORMMixin, Database):
     _create_table_query = """
         CREATE TABLE IF NOT EXISTS holidaysdate (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -75,7 +75,7 @@ class Company:
 
 
 class HolidaysDate:
-    objects = HolidayDateManager()
+    objects = HolidaysDateManager()
 
 
 class SansConfig:
