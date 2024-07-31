@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 
-from apps.company.models import Company
+from apps.company.models import Company, SansConfig, SansHistoryDate, HolidaysDate
 from apps.users.models import User
 
 blueprint = Blueprint('company', __name__)
@@ -21,4 +21,13 @@ def home():
 
 @blueprint.route('/<company_slug>')
 def company_detail(company_slug):
-    return render_template('company/page2.html', company=Company.objects.get(slug=company_slug))
+    company = Company.objects.get(slug=company_slug)
+    return render_template('company/page2.html',
+                           company=company,
+                           holidays=HolidaysDate.objects.filter(company_id=company[0]),
+                           join_company_sansconfig=
+                           Company.objects.inner_join(join_table=SansConfig,
+                                                      join_condition='company.id=sansconfig.company_id'),
+                           sansconfig=SansConfig.objects.get(company_id=company[0]),
+                           sansholidaydatetime=SansHistoryDate.objects.get(company_id=company[0]),
+                           )
