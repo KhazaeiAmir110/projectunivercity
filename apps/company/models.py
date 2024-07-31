@@ -60,7 +60,7 @@ class ReservationManager(ORMMixin, Database):
 
 class SansHistoryDateManager(ORMMixin, Database):
     _create_table_query = """
-        CREATE TABLE IF NOT EXISTS sansholidaydatetime (
+        CREATE TABLE IF NOT EXISTS sanshistorydate (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         start_time TIME NOT NULL,
         end_time TIME NOT NULL,
