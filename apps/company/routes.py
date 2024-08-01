@@ -1,7 +1,10 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session
 
+from kavenegar import KavenegarAPI
+
 from apps.company.models import Company, SansConfig, SansHistoryDate, HolidaysDate, Reservation
 from apps.users.models import User
+from base import secret
 
 blueprint = Blueprint('company', __name__)
 
@@ -46,13 +49,13 @@ def send_code():
         session['date'] = request.form.get('date'),
 
         # send code to number
-        # api = KavenegarAPI(kavenegar.API_KEY)
-        # params = {
-        #     'receptor': request.POST.get('number'),
-        #     'message': f'کد تأیید : {kavenegar.code}\n سیستم رزرواسیون و نوبت دهی براتو'
-        # }
-        #
-        # api.sms_send(params)
+        api = KavenegarAPI(secret.API_KEY)
+        params = {
+            'receptor': request.form.get('number'),
+            'message': f'کد تأیید : {secret.code}\n سیستم رزرواسیون و نوبت دهی براتو'
+        }
+
+        api.sms_send(params)
 
         return {'status': 'success'}
     return {'status': 'error', 'message': 'Invalid request'}
