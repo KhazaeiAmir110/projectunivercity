@@ -22,8 +22,13 @@ def home():
                                                                  join_condition='company.user_id=user.id'))
 
 
-@blueprint.route('/<company_slug>')
+@blueprint.route('/<company_slug>', methods=("GET", "POST"))
 def company_detail(company_slug):
+    if request.method == "POST":
+        request_code = request.form.get('code')
+        if (request_code is None) or (request_code != secret.code):
+            return redirect(url_for('company.payment', company_slug=company_slug))
+
     company = Company.objects.get(slug=company_slug)
     return render_template('company/page2.html',
                            company=company,
@@ -59,3 +64,19 @@ def send_code():
 
         return {'status': 'success'}
     return {'status': 'error', 'message': 'Invalid request'}
+
+
+@blueprint.route('/<company_slug>/payment', methods=('GET', 'POST'))
+def payment(company_slug):
+    company = Company.objects.get(slug=company_slug),
+    join_company_sansconfig = Company.objects.inner_join(join_table=SansConfig,
+                                                         join_condition='company.id=sansconfig.company_id')
+
+    for i in join_company_sansconfig:
+        if i[0] == company[0][0]:
+            result = i
+    return render_template(
+        'company/page4.html',
+        company=company,
+        result=result
+    )
