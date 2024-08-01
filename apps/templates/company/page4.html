@@ -1,5 +1,4 @@
-{% extends 'baraato/base.html' %}
-{% load static %}
+{% extends "company/base.html" %}
 
 {% block titre %}
 
@@ -18,17 +17,16 @@
 {% block main %}
     <div class="main">
         <div class="text-main">
-            <div class="text">مبلغ <b>50,000 تومان</b> + مالیات به‌عنوان هزینه رزرو در نظر گرفته شده است.</div>
-            <div class="text">این مبلغ از هزینه کل سرویس شما توسط <b>{{ company.name }}</b> کسر خواهد شد.</div>
+            <div class="text">مبلغ <b>{{ result[12] }} تومان</b> + مالیات به‌عنوان هزینه رزرو در نظر گرفته شده است.</div>
+            <div class="text">این مبلغ از هزینه کل سرویس شما توسط <b>{{ company[0][1] }}</b> کسر خواهد شد.</div>
             <div class="text">توجه کنید که در صورت عدم حضور در تاریخ و زمان رزرو شده مبلغی عودت داده نمی‌شود.</div>
 
             <!-- zarinpal -->
             <form method="post">
-                {% csrf_token %}
                 <div class="payment-main">
-                    {% if request.GET.error %}
-                    	<h5>{{ request.GET.error }}</h5>
-                    {% endif %} 
+{#                    {% if request.GET.error %}#}
+{#                    	<h5>{{ request.GET.error }}</h5>#}
+{#                    {% endif %} #}
                     <label class="payment-part">
                         <input type="radio" class="payment-input" name="zarin" value="zarin">
                         <span>درگاه پرداخت زرین پال</span>
@@ -41,7 +39,7 @@
                 <div class="btns">
                     <div class="divar"></div>
                     <div class="parent-btn-page-3">
-                        <button class="button-green"><a href="{% url 'company:detail-company-baraato' company.slug %}">بازگشت</a>
+                        <button class="button-green"><a href="{{ url_for('company.company_detail', company_slug=company[2]) }}">بازگشت</a>
                         </button>
                         <button type="submit" class="button-green">بعدی</button>
                     </div>
