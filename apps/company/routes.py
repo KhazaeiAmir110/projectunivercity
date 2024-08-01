@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, session
 
 from apps.company.models import Company, SansConfig, SansHistoryDate, HolidaysDate, Reservation
 from apps.users.models import User
@@ -32,3 +32,27 @@ def company_detail(company_slug):
                            sansholidaydatetime=SansHistoryDate.objects.get(company_id=company[0]),
                            reservations=Reservation.objects.filter(company_id=company[0]),
                            )
+
+
+@blueprint.route('/baraato/send', methods=['POST'])
+def send_code():
+    if request.method == 'POST':
+        # save information user in session
+        session['name'] = request.form.get('name'),
+        session['family'] = request.form.get('family'),
+        session['number'] = request.form.get('number'),
+        session['email'] = request.form.get('email'),
+        session['time'] = request.form.get('time'),
+        session['date'] = request.form.get('date'),
+
+        # send code to number
+        # api = KavenegarAPI(kavenegar.API_KEY)
+        # params = {
+        #     'receptor': request.POST.get('number'),
+        #     'message': f'کد تأیید : {kavenegar.code}\n سیستم رزرواسیون و نوبت دهی براتو'
+        # }
+        #
+        # api.sms_send(params)
+
+        return {'status': 'success'}
+    return {'status': 'error', 'message': 'Invalid request'}
