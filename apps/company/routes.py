@@ -30,7 +30,8 @@ def company_detail(company_slug):
             return redirect(url_for('company.payment', company_slug=company_slug))
         else:
             return render_template('pages/error.html',
-                                   message="The code you entered is incorrect")
+                                   message="The code you entered is incorrect",
+                                   company_slug=company_slug)
 
     company = Company.objects.get(slug=company_slug)
     return render_template('company/page2.html',
