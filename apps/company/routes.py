@@ -26,7 +26,7 @@ def home():
 def company_detail(company_slug):
     if request.method == "POST":
         request_code = request.form.get('code')
-        if request_code == secret.code:
+        if int(request_code) == secret.code:
             return redirect(url_for('company.payment', company_slug=company_slug))
         else:
             return render_template('pages/error.html',
