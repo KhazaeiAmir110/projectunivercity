@@ -146,7 +146,7 @@
                 </div>
                 <hr>
                 <div class="footer_modal">
-                    <button class="button-green btn-modal" type="submit">تایید کنید</button>
+                    <button id="btn-modal" class="button-green btn-modal" type="submit">تایید کنید</button>
                 </div>
             </div>
         </form>
@@ -228,19 +228,9 @@
                         item !== '{{ reservation[6] }}'
                     ))
                 }
-                {#if (jso.year === {{ reservation.date | date:"Y" }} &&#}
-                {#    jso.month === {{ reservation.date | date:"m" }} &&#}
-                {#    jso.day === {{ reservation.date | date:"d" }}#}
-                {#) {#}
-                {#    timeslots = timeslots.filter(item =>#}
-                {#        item !== '{{ reservation.time | time:"H:i:s" }}'#}
-                {#    )#}
-                {##}
-
             {% endfor %}
             //Time
             time.innerHTML = ''
-            {#TODO: Create the input section(front)#}
             for (let i = 0; i < timeslots.length; ++i) {
                 let div = document.createElement('div');
                 let input = document.createElement('input');
