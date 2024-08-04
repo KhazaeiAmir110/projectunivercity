@@ -164,11 +164,13 @@
     {# push data in list #}
     <script>
         let lis = []
-        {% for holiday in holidays %}
-            var datestr = '{{ holiday[1] }}'
-            var [year, month, day] = datestr.split('-')
-            lis.push(farvardin.gregorianToSolar(Number(year), Number(month), Number(day), "object"))
-        {% endfor %}
+        {% if holidays %}
+            {% for holiday in holidays %}
+                var datestr = '{{ holiday[1] }}'
+                var [year, month, day] = datestr.split('-')
+                lis.push(farvardin.gregorianToSolar(Number(year), Number(month), Number(day), "object"))
+            {% endfor %}
+        {% endif %}
     </script>
 
     {#After choosing the day#}
@@ -221,7 +223,7 @@
                 var datestr = '{{ reservation[5] }}'
                 var [year, month, day] = datestr.split('-')
 
-                if (jso.year === Number(year) && jso.month === Number(month) && jso.day === Number(day)){
+                if (jso.year === Number(year) && jso.month === Number(month) && jso.day === Number(day)) {
                     timeslots = timeslots.filter(item => (
                         item !== '{{ reservation[6] }}'
                     ))
@@ -236,8 +238,8 @@
                 {##}
 
             {% endfor %}
-        //Time
-        time.innerHTML = ''
+            //Time
+            time.innerHTML = ''
             {#TODO: Create the input section(front)#}
             for (let i = 0; i < timeslots.length; ++i) {
                 let div = document.createElement('div');
