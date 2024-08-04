@@ -1,4 +1,6 @@
+import requests
 from flask import Blueprint, render_template, request, redirect, url_for, session
+import json
 
 from kavenegar import KavenegarAPI
 
@@ -73,6 +75,48 @@ def send_code():
 
 @blueprint.route('/<company_slug>/payment', methods=('GET', 'POST'))
 def payment(company_slug):
+    if request.method == 'POST':
+        description = f"""
+                    آرایشگاه : {Company.objects.get(slug=company_slug)[1]}\n
+                    زمان :{session['date'][0]} \n
+                    ساعت : {session['time'][0]}
+                    """
+        if request.form.get('zarin'):
+            data = {
+                "MerchantID": secret.MERCHANT,
+                "Amount": secret.amount,
+                "Description": description,
+                "Phone": secret.phone,
+                "CallbackURL": secret.CallbackURL
+            }
+
+            data = json.dumps(data)
+            # set content length by data
+            headers = {
+                'content-type': 'application/json',
+                'content-length': str(len(data))
+            }
+
+            try:
+                response = requests.post(secret.ZP_API_REQUEST, data=data, headers=headers)
+
+                if response.status_code == 200:
+                    response = response.json()
+                    if response['Status'] == 100:
+                        return redirect(f'{secret.ZP_API_STARTPAY}{response["Authority"]}')
+                    else:
+                        return {'status': False, 'code': str(response['Status'])}
+                return response
+
+            except requests.exceptions.Timeout:
+                return {'status': False, 'code': 'timeout'}
+            except requests.exceptions.ConnectionError:
+                return {'status': False, 'code': 'connection error'}
+        else:
+            return render_template('pages/error.html',
+                                   message='ERROR : IS NOT FOUND',
+                                   company_slug=company_slug)
+
     company = Company.objects.get(slug=company_slug),
     join_company_sansconfig = Company.objects.inner_join(join_table=SansConfig,
                                                          join_condition='company.id=sansconfig.company_id')
