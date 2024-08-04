@@ -26,8 +26,11 @@ def home():
 def company_detail(company_slug):
     if request.method == "POST":
         request_code = request.form.get('code')
-        if (request_code is None) or (request_code != secret.code):
+        if request_code == secret.code:
             return redirect(url_for('company.payment', company_slug=company_slug))
+        else:
+            return render_template('pages/error.html',
+                                   message="The code you entered is incorrect")
 
     company = Company.objects.get(slug=company_slug)
     return render_template('company/page2.html',
@@ -54,13 +57,14 @@ def send_code():
         session['date'] = request.form.get('date'),
 
         # send code to number
-        api = KavenegarAPI(secret.API_KEY)
-        params = {
-            'receptor': request.form.get('number'),
-            'message': f'کد تأیید : {secret.code}\n سیستم رزرواسیون و نوبت دهی براتو'
-        }
-
-        api.sms_send(params)
+        # api = KavenegarAPI(secret.API_KEY)
+        # params = {
+        #     'receptor': request.form.get('number'),
+        #     'message': f'کد تأیید : {secret.code}\n سیستم رزرواسیون و نوبت دهی براتو'
+        # }
+        #
+        # api.sms_send(params)
+        print(secret.code)
 
         return {'status': 'success'}
     return {'status': 'error', 'message': 'Invalid request'}
