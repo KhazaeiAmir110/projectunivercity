@@ -1,6 +1,7 @@
+import json
 import requests
 from flask import Blueprint, render_template, request, redirect, url_for, session
-import json
+from suds.client import Client
 
 from kavenegar import KavenegarAPI
 
@@ -76,47 +77,18 @@ def send_code():
 @blueprint.route('/<company_slug>/payment', methods=('GET', 'POST'))
 def payment(company_slug):
     if request.method == 'POST':
-        description = f"""
-                    آرایشگاه : {Company.objects.get(slug=company_slug)[1]}\n
-                    زمان :{session['date'][0]} \n
-                    ساعت : {session['time'][0]}
-                    """
-        if request.form.get('zarin'):
-            data = {
-                "MerchantID": secret.MERCHANT,
-                "Amount": secret.amount,
-                "Description": description,
-                "Phone": secret.phone,
-                "CallbackURL": secret.CallbackURL
-            }
+        client = Client(secret.ZARINPAL_WEBSERVICE)
+        result = client.service.PaymentRequest(
+            secret.MERCHANT, secret.amount, secret.description, 'amir@gmail.com', secret.phone,
+            url_for('company.verify', _external=True)
+        )
 
-            data = json.dumps(data)
-            # set content length by data
-            headers = {
-                'content-type': 'application/json',
-                'content-length': str(len(data))
-            }
-
-            try:
-                response = requests.post(secret.ZP_API_REQUEST, data=data, headers=headers)
-
-                if response.status_code == 200:
-                    response = response.json()
-                    if response['Status'] == 100:
-                        return redirect(f'{secret.ZP_API_STARTPAY}{response["Authority"]}')
-                    else:
-                        return {'status': False, 'code': str(response['Status'])}
-                return response
-
-            except requests.exceptions.Timeout:
-                return {'status': False, 'code': 'timeout'}
-            except requests.exceptions.ConnectionError:
-                return {'status': False, 'code': 'connection error'}
+        if result.Status == 100:
+            return redirect(f'{secret.ZP_API_STARTPAY}{result.Authority}')
         else:
-            return render_template('pages/error.html',
-                                   message='ERROR : IS NOT FOUND',
-                                   company_slug=company_slug)
+            return 'ERROR'
 
+    # Display information to the user
     company = Company.objects.get(slug=company_slug),
     join_company_sansconfig = Company.objects.inner_join(join_table=SansConfig,
                                                          join_condition='company.id=sansconfig.company_id')
@@ -129,3 +101,20 @@ def payment(company_slug):
         company=company,
         result=result
     )
+
+
+@blueprint.route('/payment/verify/', methods=['GET', 'POST'])
+def verify():
+    client = Client(secret.ZARINPAL_WEBSERVICE)
+    if request.args.get('Status') == 'OK':
+        result = client.service.PaymentVerification(secret.MERCHANT,
+                                                    request.args['Authority'],
+                                                    secret.amount)
+        if result.Status == 100:
+            return 'Transaction success. RefID: ' + str(result.RefID)
+        elif result.Status == 101:
+            return 'Transaction submitted : ' + str(result.Status)
+        else:
+            return 'Transaction failed. Status: ' + str(result.Status)
+    else:
+        return 'Transaction failed or canceled by user'
