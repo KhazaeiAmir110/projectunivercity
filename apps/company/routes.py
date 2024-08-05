@@ -103,6 +103,7 @@ def payment(company_slug):
     )
 
 
+# zarinpal => verify
 @blueprint.route('/payment/verify/', methods=['GET', 'POST'])
 def verify():
     client = Client(secret.ZARINPAL_WEBSERVICE)
@@ -111,10 +112,10 @@ def verify():
                                                     request.args['Authority'],
                                                     secret.amount)
         if result.Status == 100:
-            return 'Transaction success. RefID: ' + str(result.RefID)
-        elif result.Status == 101:
-            return 'Transaction submitted : ' + str(result.Status)
+            return render_template('company/page5.html')
         else:
-            return 'Transaction failed. Status: ' + str(result.Status)
+            return render_template('pages/error.html',
+                                   message='Transaction failed. Status: ' + str(result.Status))
     else:
-        return 'Transaction failed or canceled by user'
+        return render_template('pages/error.html',
+                               message='Transaction failed or canceled by user')
