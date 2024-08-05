@@ -82,7 +82,7 @@ def payment(company_slug):
         if session['amount']:
             result = client.service.PaymentRequest(
                 secret.MERCHANT, session['amount'], secret.description, secret.email, secret.phone,
-                url_for('company.verify', _external=True)
+                url_for('company.verify',company_slug=company_slug, _external=True)
             )
         else:
             return render_template('pages/error.html',
@@ -109,13 +109,13 @@ def payment(company_slug):
 
 
 # zarinpal => verify
-@blueprint.route('/payment/verify/', methods=['GET', 'POST'])
-def verify():
+@blueprint.route('/<company_slug>/payment/verify/', methods=['GET', 'POST'])
+def verify(company_slug):
     client = Client(secret.ZARINPAL_WEBSERVICE)
     if request.args.get('Status') == 'OK':
         result = client.service.PaymentVerification(secret.MERCHANT,
                                                     request.args['Authority'],
-                                                    secret.amount)
+                                                    session['amount'])
         if result.Status == 100:
             return render_template('company/page5.html')
         else:
