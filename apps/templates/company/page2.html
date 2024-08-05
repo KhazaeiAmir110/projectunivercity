@@ -119,6 +119,10 @@
                 <input name="date" id="data-item">
             </label>
 
+            <label for="amount" style="display: none">
+                <input name="amount" id="amount-item">
+            </label>
+
 
             {# TODO:Fix space buttons #}
             <!-- buttons -->
@@ -262,6 +266,12 @@
                     document.querySelector('#time-item').value = event.target.value
                     document.querySelector('#data-item').value = farvardin.solarToGregorian(Number(date[0]),
                         Number(date[1]), Number(date[2]), "string")
+                    {% for join in join_company_sansconfig %}
+                        {% if company[0]==join[0] %}
+                            var amount = {{ join[12] }}
+                        {% endif %}
+                    {% endfor %}
+                    document.querySelector('#amount-item').value = amount
 
                     let doc_none = document.querySelector('.part-2-main')
                     doc_none.style.display = 'none'

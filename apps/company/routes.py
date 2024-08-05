@@ -59,6 +59,7 @@ def send_code():
         session['email'] = request.form.get('email'),
         session['time'] = request.form.get('time'),
         session['date'] = request.form.get('date'),
+        session['amount'] = request.form.get('amount')
 
         # send code to number
         # api = KavenegarAPI(secret.API_KEY)
@@ -78,10 +79,14 @@ def send_code():
 def payment(company_slug):
     if request.method == 'POST':
         client = Client(secret.ZARINPAL_WEBSERVICE)
-        result = client.service.PaymentRequest(
-            secret.MERCHANT, secret.amount, secret.description, 'amir@gmail.com', secret.phone,
-            url_for('company.verify', _external=True)
-        )
+        if session['amount']:
+            result = client.service.PaymentRequest(
+                secret.MERCHANT, session['amount'], secret.description, secret.email, secret.phone,
+                url_for('company.verify', _external=True)
+            )
+        else:
+            return render_template('pages/error.html',
+                                   message='Error')
 
         if result.Status == 100:
             return redirect(f'{secret.ZP_API_STARTPAY}{result.Authority}')
