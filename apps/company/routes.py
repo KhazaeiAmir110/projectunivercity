@@ -1,9 +1,7 @@
-import json
-import requests
 from flask import Blueprint, render_template, request, redirect, url_for, session
-from suds.client import Client
 
-from kavenegar import KavenegarAPI
+from suds.client import Client as sudsClient
+from ippanel import Client as IPPanelClient
 
 from apps.company.models import Company, SansConfig, SansHistoryDate, HolidaysDate, Reservation
 from apps.users.models import User
@@ -37,16 +35,27 @@ def company_detail(company_slug):
                                    company_slug=company_slug)
 
     company = Company.objects.get(slug=company_slug)
-    return render_template('company/page2.html',
-                           company=company,
-                           holidays=HolidaysDate.objects.filter(company_id=company[0]),
-                           join_company_sansconfig=
-                           Company.objects.inner_join(join_table=SansConfig,
-                                                      join_condition='company.id=sansconfig.company_id'),
-                           sansconfig=SansConfig.objects.get(company_id=company[0]),
-                           sansholidaydatetime=SansHistoryDate.objects.get(company_id=company[0]),
-                           reservations=Reservation.objects.filter(company_id=company[0]),
-                           )
+    if company is not None:
+        holidays = HolidaysDate.objects.filter(company_id=company[0])
+        sansconfig = SansConfig.objects.get(company_id=company[0])
+        sansholidaydatetime = SansHistoryDate.objects.get(company_id=company[0])
+        reservations = Reservation.objects.filter(company_id=company[0])
+    else:
+        holidays = 'No holidays'
+        sansconfig = 'No sansconfig'
+        sansholidaydatetime = 'No sansholidaydatetime'
+        reservations = 'No reservations'
+    return render_template(
+        'company/page2.html',
+        company=company,
+        holidays=holidays,
+        sansconfig=sansconfig,
+        sansholidaydatetime=sansholidaydatetime,
+        reservations=reservations,
+        join_company_sansconfig=
+        Company.objects.inner_join(join_table=SansConfig,
+                                   join_condition='company.id=sansconfig.company_id'),
+    )
 
 
 @blueprint.route('/baraato/send', methods=['POST'])
@@ -62,14 +71,13 @@ def send_code():
         session['amount'] = request.form.get('amount')
 
         # send code to number
-        # api = KavenegarAPI(secret.API_KEY)
-        # params = {
-        #     'receptor': request.form.get('number'),
-        #     'message': f'کد تأیید : {secret.code}\n سیستم رزرواسیون و نوبت دهی براتو'
-        # }
-        #
-        # api.sms_send(params)
-        print(secret.code)
+        api = IPPanelClient(secret.API_KEY)
+        api.send(
+            sender=secret.sender,
+            recipients=[request.form.get('number'), ],
+            message=f'کد تأیید : {secret.code}\n سیستم رزرواسیون و نوبت دهی براتو',
+            summary=secret.summary
+        )
 
         return {'status': 'success'}
     return {'status': 'error', 'message': 'Invalid request'}
@@ -78,7 +86,7 @@ def send_code():
 @blueprint.route('/<company_slug>/payment', methods=('GET', 'POST'))
 def payment(company_slug):
     if request.method == 'POST':
-        client = Client(secret.ZARINPAL_WEBSERVICE)
+        client = sudsClient(secret.ZARINPAL_WEBSERVICE)
         if session['amount']:
             result = client.service.PaymentRequest(
                 secret.MERCHANT, session['amount'], secret.description, secret.email, secret.phone,
@@ -111,7 +119,7 @@ def payment(company_slug):
 # zarinpal => verify
 @blueprint.route('/<company_slug>/payment/verify/', methods=['GET', 'POST'])
 def verify(company_slug):
-    client = Client(secret.ZARINPAL_WEBSERVICE)
+    client = sudsClient(secret.ZARINPAL_WEBSERVICE)
     if request.args.get('Status') == 'OK':
         result = client.service.PaymentVerification(secret.MERCHANT,
                                                     request.args['Authority'],
