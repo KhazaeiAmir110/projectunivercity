@@ -9,6 +9,7 @@ flask-migrate = "==4.0.7"
 flask-session = "==0.8.0"
 kavenegar = "==1.1.2"
 suds = "==1.1.2"
+medianasms = "==1.1.0"
 
 [dev-packages]
 
