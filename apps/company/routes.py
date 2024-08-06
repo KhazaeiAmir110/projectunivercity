@@ -82,7 +82,7 @@ def payment(company_slug):
         if session['amount']:
             result = client.service.PaymentRequest(
                 secret.MERCHANT, session['amount'], secret.description, secret.email, secret.phone,
-                url_for('company.verify',company_slug=company_slug, _external=True)
+                url_for('company.verify', company_slug=company_slug, _external=True)
             )
         else:
             return render_template('pages/error.html',
@@ -117,6 +117,15 @@ def verify(company_slug):
                                                     request.args['Authority'],
                                                     session['amount'])
         if result.Status == 100:
+            Reservation.objects.insert(
+                first_name=session['name'][0],
+                last_name=session['family'][0],
+                phone_number=session['number'][0],
+                email=session['email'][0],
+                date=session['date'][0],
+                time=session['time'][0],
+                company_id=Company.objects.get(slug=company_slug)[0]
+            )
             return render_template('company/page5.html')
         else:
             return render_template('pages/error.html',
