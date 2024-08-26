@@ -1,6 +1,6 @@
 import sqlite3
 
-import secret
+from base import secret
 
 
 class Database:
