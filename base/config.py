@@ -1,6 +1,6 @@
 import os
 
-import secret
+from base import secret
 
 
 class Config(object):
