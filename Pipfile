@@ -6,6 +6,9 @@ name = "pypi"
 [packages]
 flask = "==3.0.3"
 flask-migrate = "==4.0.7"
+flask-session = "==0.8.0"
+kavenegar = "==1.1.2"
+suds = "==1.1.2"
 
 [dev-packages]
 
